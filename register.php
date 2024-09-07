@@ -33,6 +33,16 @@
         $sta_origin = htmlspecialchars(trim($_POST["sta_origin"]));
         $lga_origin = htmlspecialchars(trim($_POST["lga_origin"]));
         $address = htmlspecialchars(trim($_POST["address"]));
+        $profile_dp = $_FILES["profile_dp"];
+
+        // Validating Image Upload
+        if ($profile_dp['error'] == 0) {
+            $filename = uniqid("profile_"). "." . pathinfo($profile_dp['name'], PATHINFO_EXTENSION);
+            $filelocation = 'profile_dp/'. $filename;
+            // move_uploaded_file($profile_dp["tmp_name"], $filelocation);
+        } else {
+            $dpError = "Error uploading Image";
+        }
        
 
         // Validating email address
@@ -101,17 +111,19 @@
         }
 
         // Populating the database
-        if ($emailError == "" && $phoneError == ""  && $passError == "" && $ninError == "" && $bvnError == "") {
-            $sql = 'INSERT INTO users (firstname, middlename, lastname, gender, phone, email, username, password, dob, acc_type, marital_status, address, lga_origin, state_origin, bvn, nin ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        if ($emailError == "" && $phoneError == ""  && $passError == "" && $ninError == "" && $bvnError == "" && $dpError == "") {
+            $sql = 'INSERT INTO users (firstname, middlename, lastname, gender, phone, email, username, password, dob, acc_type, marital_status, address, lga_origin, state_origin, bvn, nin, profile_dp ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
             $stmt = $conn -> prepare($sql);
             if ($stmt) {
-                $stmt->bind_param("ssssssssssssssss", $firstname, $middlename, $surname, $gender, $phone, $email, $username, $pass, $dob, $acc_type, $maritalstatus, $address, $lga_origin, $sta_origin, $bvn, $nin);
-                if ($stmt->execute()) {
+                $stmt->bind_param("sssssssssssssssss", $firstname, $middlename, $surname, $gender, $phone, $email, $username, $pass, $dob, $acc_type, $maritalstatus, $address, $lga_origin, $sta_origin, $bvn, $nin, $filelocation);
+                if ($stmt->execute() && move_uploaded_file($profile_dp["tmp_name"], $filelocation)) {
                     echo "<h3>Registered Succesfully</h3>";
+                } else {
+                    echo "Error: $stmt->error";
                 }
             }
         } else {
-            echo "Errors: $passError, $phoneError, $emailError, $ninError, $bvnError";
+            echo "Errors: $passError, $phoneError, $emailError, $ninError, $bvnError", $dpError;
         }        
     }
         
@@ -119,13 +131,18 @@
 ?>
 
 <main class="m-5 p-5" style="background: gray;">
-    <form autocomplete="off" method="post" action="" style="display: flex; gap: 20px; flex-flow: column">
+    <form autocomplete="off" method="post" action="" style="display: flex; gap: 20px; flex-flow: column" enctype="multipart/form-data">
 
         <h1>Sign Up</h1>
 
         <div class="row">
+                <input type="file" class="form-control" name="profile_dp" id="profile_dp"/>
+                <img src="" alt="file upload" class="form-control" id="imagePreview" name="imagePreview"/>
+        </div>
+        
+        <div class="row">
             <div class="col">
-                <input type="text" class="form-control" placeholder="First name" name="firstname" value="<?= $firstname?>" required/>
+              <input type="text" class="form-control" placeholder="First name" name="firstname" value="<?= $firstname?>" required/>
             </div>
             <div class="col">
                 <input type="text" class="form-control" placeholder="Middlename (Optional)" name="middlename" value="<?= $middlename?>"/>
@@ -217,7 +234,6 @@
                 <span class="text-danger"><?= $passError?></span>
             </div>
         </div>
-
         <div class="row ">
             <div class="col">
                 <input type="submit" value="Sign up" class="form-control btn btn-primary"/>
@@ -225,3 +241,33 @@
         </div>
     </form>
 </main>
+<!-- <style>
+    #imagePreview {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 5px;
+    }
+</style> -->
+<script>
+    const preview = document.getElementById("#imagePreview");
+    const profImage = document.getElementById("#profile_dp");
+    profImage.addEventListener ("change" function {
+        let file = this.files[0];
+        imgSize = 3 * 1024 * 1024;
+        if(file['type'] == jpg || file['type'] == jpeg || file["type"] == png) {
+            if (!(file['size'] > imgSize)) {
+                const reader = new FileReader();
+                reader.onload = function {
+                    preview.src = reader.result
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert (file['size'] "+ should not exceed 3MB");
+                this.value = "";
+            }
+        } else {
+            alert (file['name'] "+ is not allowed");
+            this.value = "";
+        }
+    })
+</script>
