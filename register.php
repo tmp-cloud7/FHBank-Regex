@@ -132,14 +132,12 @@
 
 <main class="m-5 p-5" style="background: gray;">
     <form autocomplete="off" method="post" action="" style="display: flex; gap: 20px; flex-flow: column" enctype="multipart/form-data">
-
-        <h1>Sign Up</h1>
-
-        <div class="row">
-                <input type="file" class="form-control" name="profile_dp" id="profile_dp"/>
-                <img src="" alt="file upload" class="form-control" id="imagePreview" name="imagePreview"/>
-        </div>
         
+        <h1>Sign Up</h1>
+        <div class="row">
+                <img src="" alt="File Upload" class="form-control" id="imagePreview" name="imagePreview"/>
+                <input type="file" class="form-control" name="profile_dp" id="profile_dp" required/>                
+        </div>        
         <div class="row">
             <div class="col">
               <input type="text" class="form-control" placeholder="First name" name="firstname" value="<?= $firstname?>" required/>
@@ -241,33 +239,35 @@
         </div>
     </form>
 </main>
-<!-- <style>
+<style>
     #imagePreview {
         max-width: 200px;
         max-height: 200px;
         border-radius: 5px;
     }
-</style> -->
+</style>
 <script>
-    const preview = document.getElementById("#imagePreview");
-    const profImage = document.getElementById("#profile_dp");
-    profImage.addEventListener ("change" function {
+    const preview = document.querySelector("#imagePreview");
+    const profImage = document.querySelector("#profile_dp");
+    
+    profImage.addEventListener("change", function() {
         let file = this.files[0];
-        imgSize = 3 * 1024 * 1024;
-        if(file['type'] == jpg || file['type'] == jpeg || file["type"] == png) {
-            if (!(file['size'] > imgSize)) {
+
+        fileSize = 3 * 1024 * 1024;
+        if (file['type'] == "image/jpeg" || file['type'] == "image/png" || file['type'] == "image/jpg") {
+            if (!(file['size'] > fileSize)) {
                 const reader = new FileReader();
-                reader.onload = function {
-                    preview.src = reader.result
+                reader.onload = function() {
+                    preview.src = reader.result;
                 }
                 reader.readAsDataURL(file);
-            } else {
-                alert (file['size'] "+ should not exceed 3MB");
-                this.value = "";
-            }
         } else {
-            alert (file['name'] "+ is not allowed");
+            alert("file exceed 3MB");
             this.value = "";
         }
-    })
+        } else {
+            alert(file['name'] + " is not allowed");
+            this.value = "";
+        }
+    });
 </script>
