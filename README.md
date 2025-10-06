@@ -67,6 +67,8 @@ Backend	PHP (Procedural)
 Database	MySQL
 Validation	Regular Expressions (Regex)
 Server	XAMPP / WAMP
+
+
 🚀 Getting Started
 
 Clone or download the project to your local environment (e.g., XAMPP’s htdocs folder).
@@ -86,26 +88,45 @@ Try registering or logging in — and see how Regex rules validate your input.
 
 📂 Folder Structure
 FHBank/
+
 │
+
 ├── assets/              # Static files (images/icons)
+
 ├── bootstrap/           # Bootstrap library
+
 ├── profile_dp/          # Profile display pictures (optional)
+
 ├── db_confhbank.php     # Database configuration
+
 ├── header.php           # Header component
+
 ├── style.css            # Custom styles
+
 ├── index.php            # Landing page
+
 ├── register.php         # Registration page with Regex validation
+
 ├── login.php            # Login page
+
 ├── dashboard.php        # User dashboard
+
 ├── logout.php           # Logout logic
+
 └── .gitignore           # Ignored files
 
 🧩 Example Regex Patterns Used
+
 Field	Example Pattern	Purpose
+
 Email	/^[\w\.-]+@[\w\.-]+\.\w{2,}$/	Validates proper email format
+
 Password	/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/	Ensures strong password
+
 Full Name	/^[A-Za-z\s]+$/	Allows only alphabets and spaces
+
 Phone Number	/^\d{10,15}$/	Validates numeric phone number
+
 🧩 Future Enhancements
 
 🔒 Add password hashing using password_hash()
